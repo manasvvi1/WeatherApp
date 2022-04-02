@@ -1,0 +1,40 @@
+h1 {
+  color: blue;
+}
+
+h2 {
+  display: inline;
+}
+
+.float-left {
+  float: left;
+}
+
+.float-right {
+  float: right;
+}
+
+p {
+  display: inline;
+}
+
+.margin-5 {
+  margin: 5%;
+}
+
+#changeButton,
+#currentLocation {
+  background-color: rgb(182, 182, 229);
+  padding: 2%;
+  color: black;
+  border-radius: 50%;
+}
+
+#dateBox,
+#dateDisplay {
+  text-align: center;
+}
+
+.underline {
+  text-decoration: underline;
+}
