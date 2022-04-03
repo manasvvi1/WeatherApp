@@ -37,3 +37,7 @@ h1{
 .colorBlue{
   color: rgb(49, 143, 237);
 }
+
+.center{
+  text-align: center;
+}

@@ -27,6 +27,8 @@ let month = [
 let city = "Delhi";
 let apiKey = "5524e0e680f83cc2d9461aafa8209a99";
 let apiURL;
+let forecastAPIUrl;
+let unit = "C";
 
 document.querySelector(".searchBtn").addEventListener("click", changeCityDisplay);
 
@@ -43,25 +45,34 @@ function changeCityDisplay(){
   axios.get(apiURL).then(changeDesc);
 }
 
-function changeDayTime(){
-  let hour = dateNTime.getHours();
-  let min = dateNTime.getMinutes();
-  let todayDay = day[dateNTime.getDay()];
-  if(hour > 9 && min > 9){
-    document.querySelector(".dayTimeDisplay").innerHTML = `${todayDay} ${hour}:${min}`;
+let forecastMaxTemp = [];
+let forecastMinTemp = [];
+let forecastIcon = [];
+
+function getForecast(response){
+  for(let i = 0 ; i < 6 ; i++){
+    forecastMaxTemp.push(response.data.daily[i].temp.max.toFixed(0));
+    forecastMinTemp.push(response.data.daily[i].temp.min.toFixed(0));
+    forecastIcon.push(response.data.daily[i].weather[0].icon);
   }
-  else if(hour > 9){
-    document.querySelector(".dayTimeDisplay").innerHTML = `${todayDay} ${hour}:0${min}`;
-  }
-  else if(min > 9){
-    document.querySelector(".dayTimeDisplay").innerHTML = `${todayDay} 0${hour}:${min}`;
-  }
-  else{
-    document.querySelector(".dayTimeDisplay").innerHTML = `${todayDay} 0${hour}:0${min}`;
-  }
+  forecastDisplay();
 }
 
-changeDayTime();
+let hour = dateNTime.getHours();
+let min = dateNTime.getMinutes();
+let todayDay = dateNTime.getDay();
+if(hour > 9 && min > 9){
+  document.querySelector(".dayTimeDisplay").innerHTML = `${day[todayDay]} ${hour}:${min}`;
+}
+else if(hour > 9){
+  document.querySelector(".dayTimeDisplay").innerHTML = `${day[todayDay]} ${hour}:0${min}`;
+}
+else if(min > 9){
+  document.querySelector(".dayTimeDisplay").innerHTML = `${day[todayDay]} 0${hour}:${min}`;
+}
+else{
+  document.querySelector(".dayTimeDisplay").innerHTML = `${day[todayDay]} 0${hour}:0${min}`;
+}
 
 function changeDesc(response){
   document.querySelector(".windSpeedDisplay").innerHTML = `Wind: ${response.data.wind.speed}km/hr`;
@@ -71,7 +82,8 @@ function changeDesc(response){
   let weatherIcon = response.data.weather[0].icon;
   let iconURL = `http://openweathermap.org/img/wn/${weatherIcon}@2x.png`;
   document.querySelector(".tempEmojiDisplay").innerHTML = `<img src=${iconURL}>`;
-  console.log(response);
+  forecastAPIUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${response.data.coord.lat}&lon=${response.data.coord.lon}&exclude=current,minutely,hourly&appid=${apiKey}&units=metric`;
+  axios.get(forecastAPIUrl).then(getForecast);
 }
 
 document.querySelector(".convertFahrenheit").addEventListener("click", convertToFahrenheit);
@@ -85,7 +97,13 @@ function convertToCelsius(){
     document.querySelector(".convertFahrenheit").classList.add("colorBlack");
     let temp = parseInt(document.querySelector(".temperatureDisplay").innerHTML).toFixed(0);
     temp = (temp - 32)*5/9;
-    document.querySelector(".temperatureDisplay").innerHTML = temp;
+    document.querySelector(".temperatureDisplay").innerHTML = temp.toFixed(0);
+    for(let i = 0 ; i < 6 ; i++){
+      forecastMaxTemp[i] = parseInt((forecastMaxTemp[i]-32)*5/9).toFixed(0);
+      forecastMinTemp[i] = parseInt((forecastMinTemp[i]-32)*5/9).toFixed(0)
+    }
+    unit = "C";
+    forecastDisplay();
   }
 }
 
@@ -97,6 +115,48 @@ function convertToFahrenheit(){
     document.querySelector(".convertCelsius").classList.add("colorBlack");
     let temp = parseInt(document.querySelector(".temperatureDisplay").innerHTML).toFixed(0);
     temp = temp*9/5+32;
-    document.querySelector(".temperatureDisplay").innerHTML = temp;
+    document.querySelector(".temperatureDisplay").innerHTML = temp.toFixed(0);
+    for(let i = 0 ; i < 6 ; i++){
+      forecastMaxTemp[i] = parseInt(forecastMaxTemp[i]*9/5+32).toFixed(0);
+      forecastMinTemp[i] = parseInt(forecastMinTemp[i]*9/5+32).toFixed(0)
+    }
+    unit = "F";
+    forecastDisplay();
   }
+}
+
+function forecastDisplay(){
+  let insertHTML = "";
+
+  let countDays = 0;
+
+  for(let i = todayDay+1 ; i < 7 ; i++){
+    let iconURL = `http://openweathermap.org/img/wn/${forecastIcon[countDays]}@2x.png`;
+
+    let forecastBlock = `<div class="col-2 p-4">
+    <h4 class="center">${day[i]}</h4>
+    <div class="center"><img src="${iconURL}"></div>
+    <span class="maxDay+1">${forecastMaxTemp[countDays]}<sup>&deg;${unit}</sup></span>
+    <span class="minDay+1 float-end">${forecastMinTemp[countDays]}<sup>&deg;${unit}</sup></span>
+    </div>`;
+    countDays++;
+    insertHTML += forecastBlock;
+  }
+
+  if(countDays != 6){
+    for(let i = 0 ; countDays != 6 ; i++){
+      let iconURL = `http://openweathermap.org/img/wn/${forecastIcon[countDays]}@2x.png`;
+
+      let forecastBlock = `<div class="col-2 p-4">
+      <h4 class="center">${day[i]}</h4>
+      <div class="center"><img src="${iconURL}"></div>
+      <span class="maxDay+1">${forecastMaxTemp[countDays]}<sup>&deg;${unit}</sup></span>
+      <span class="minDay+1 float-end">${forecastMinTemp[countDays]}<sup>&deg;${unit}</sup></span>
+      </div>`;
+      countDays++;
+      insertHTML += forecastBlock;
+    }
+  }
+
+  document.querySelector(".forecastDaily").innerHTML = insertHTML;
 }
