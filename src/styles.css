@@ -1,40 +1,39 @@
-h1 {
-  color: blue;
+*{
+  box-sizing: border-box;
+  color: gray;
+  font-family: sans-serif;
 }
 
-h2 {
-  display: inline;
-}
-
-.float-left {
-  float: left;
-}
-
-.float-right {
-  float: right;
-}
-
-p {
-  display: inline;
-}
-
-.margin-5 {
-  margin: 5%;
-}
-
-#changeButton,
-#currentLocation {
-  background-color: rgb(182, 182, 229);
+.mainBlock{
+  border: 2px gray solid;
+  border-radius: 5px;
   padding: 2%;
+}
+
+.searchBtn{
+  color: white;
+  background-color: rgb(49, 143, 237);
+  border: blue 1px solid;
+  border-radius: 3px;
+}
+
+.temperatureDisplay, .tempEmojiDisplay{
+  font: larger;
+}
+
+h1{
+  display: inline;
+}
+
+.temperatureDisplay{
   color: black;
-  border-radius: 50%;
+  font-weight: bolder;
 }
 
-#dateBox,
-#dateDisplay {
-  text-align: center;
+.colorBlack{
+  color: black;
 }
 
-.underline {
-  text-decoration: underline;
+.colorBlue{
+  color: rgb(49, 143, 237);
 }
