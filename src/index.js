@@ -32,6 +32,12 @@ let unit = "C";
 
 document.querySelector(".searchBtn").addEventListener("click", changeCityDisplay);
 
+document.querySelector('#searchByCityName').addEventListener('keypress', function (e) {
+  if (e.key === 'Enter') {
+    changeCityDisplay();
+  }
+});
+
 document.querySelector(".cityNameDisplay").innerHTML = city;
 document.querySelector("#searchByCityName").value = "";
 apiURL = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
@@ -83,6 +89,8 @@ function changeDesc(response){
   let iconURL = `http://openweathermap.org/img/wn/${weatherIcon}@2x.png`;
   document.querySelector(".tempEmojiDisplay").innerHTML = `<img src=${iconURL}>`;
   forecastAPIUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${response.data.coord.lat}&lon=${response.data.coord.lon}&exclude=current,minutely,hourly&appid=${apiKey}&units=metric`;
+  forecastMaxTemp = [];
+  forecastMinTemp = [];
   axios.get(forecastAPIUrl).then(getForecast);
 }
 
